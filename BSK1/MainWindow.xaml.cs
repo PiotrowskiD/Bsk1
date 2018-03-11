@@ -20,9 +20,15 @@ namespace BSK1
     /// </summary>
     public partial class MainWindow : Window
     {
+        EncryptionService encryptionService;
+
         public MainWindow()
         {
             InitializeComponent();
+            encryptionService = new EncryptionService();
+            encryptionService.Hello();
+            encryptionService.EncryptFile(@"C:\workspace_f\BSK\README.md", @"C:\workspace_f\BSK\READMEenc");
+            encryptionService.DecryptFile(@"C:\workspace_f\BSK\READMEenc.encrypted", @"C:\workspace_f\BSK\READMEdec.md");
         }
     }
 }
