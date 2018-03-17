@@ -5,8 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BSK1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="SuperEncryptor 9000" Height="219.333" Width="300">
+    <Grid Name="mainWindow">
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding fileTextBox}" VerticalAlignment="Top" Width="170"/>
+        <Button Content="Choose file" Margin="185,10,10,0" Click="Button_Click" Height="23" VerticalAlignment="Top"/>
+        <Button Content="Encrypt" Margin="10,151,147,8" Click="Button_Click_1"/>
+        <Button Content="Decrypt" Margin="145,151,10,8" Click="Button_Click_2"/>
+        <Label Content="Cipher mode:" HorizontalAlignment="Left" Margin="10,71,0,82" Width="100"/>
+        <RadioButton Content="ECB" HorizontalAlignment="Left" Margin="10,102,0,62" Checked="RadioButton_Checked"/>
+        <RadioButton Content="CBC" HorizontalAlignment="Left" Margin="10,122,0,42"/>
+        <RadioButton Content="CFB" HorizontalAlignment="Left" Margin="69,102,0,62"/>
+        <RadioButton Content="OFB" HorizontalAlignment="Left" Margin="69,122,0,42"/>
+        <Label Content="File recipent:" Margin="145,71,10,0" Height="35" VerticalAlignment="Top"/>
+        <TextBox Margin="145,100,10,0" TextWrapping="Wrap" Text="TextBox" Height="20" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="10,38,0,0" TextWrapping="Wrap" Text="{Binding fileTextBox}" VerticalAlignment="Top" Width="170"/>
+        <Button Content="Output folder" Margin="185,38,10,0" VerticalAlignment="Top" Height="23" Click="Button_Click"/>
+
     </Grid>
 </Window>

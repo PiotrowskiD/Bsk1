@@ -11,24 +11,19 @@ namespace BSK1
     class EncryptionService
     {
 
-        public void Hello() {
-            Console.WriteLine("EncryptionService");
-        }
-
-        public void EncryptFile(String path, String output) {
-            String password = @"test1234"; // musi być 16 bajtów
+        public void EncryptFile(String inputPath, String outputPath, String encryptionKey, CipherMode mode) {
             UnicodeEncoding encoding = new UnicodeEncoding();
-            byte[] key = encoding.GetBytes(password);
+            byte[] key = encoding.GetBytes(encryptionKey);
 
-            FileStream outputStream = new FileStream(output + ".encrypted", FileMode.Create);
+            FileStream outputStream = new FileStream(outputPath + ".encrypted", FileMode.Create);
 
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             aes.BlockSize = 128;
             aes.FeedbackSize = 128;
-            aes.Mode = CipherMode.CBC;
+            aes.Mode = mode;
             CryptoStream cryptoStream = new CryptoStream(outputStream, aes.CreateEncryptor(key, key), CryptoStreamMode.Write);
 
-            FileStream inputStream = new FileStream(path, FileMode.Open);
+            FileStream inputStream = new FileStream(inputPath, FileMode.Open);
             int data;
             while ((data = inputStream.ReadByte()) != -1) {
                 cryptoStream.WriteByte((byte)data);
@@ -38,20 +33,19 @@ namespace BSK1
             outputStream.Close();
         }
 
-        public void DecryptFile(String path, String output) {
-            String password = @"test1234";
+        public void DecryptFile(String inputPath, String outputPath, String decryptionKey, CipherMode mode) {
             UnicodeEncoding encoding = new UnicodeEncoding();
-            byte[] key = encoding.GetBytes(password);
+            byte[] key = encoding.GetBytes(decryptionKey);
 
-            FileStream inputStream = new FileStream(path, FileMode.Open);
+            FileStream inputStream = new FileStream(inputPath, FileMode.Open);
 
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             aes.BlockSize = 128;
             aes.FeedbackSize = 128;
-            aes.Mode = CipherMode.CBC;
+            aes.Mode = mode;
             CryptoStream cryptoStream = new CryptoStream(inputStream, aes.CreateDecryptor(key, key), CryptoStreamMode.Read);
 
-            FileStream outputStream = new FileStream(output, FileMode.Create);
+            FileStream outputStream = new FileStream(outputPath + @".decrypted", FileMode.Create);
             int data;
             while ((data = cryptoStream.ReadByte()) != -1)
             {

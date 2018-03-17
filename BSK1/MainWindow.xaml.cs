@@ -22,13 +22,49 @@ namespace BSK1
     {
         EncryptionService encryptionService;
 
+        private String ftb;
+        private String fileTextBox {
+            get {
+                return this.ftb;
+            }
+            set {
+                this.ftb = value;
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
             encryptionService = new EncryptionService();
-            encryptionService.Hello();
-            encryptionService.EncryptFile(@"C:\workspace_f\BSK\README.md", @"C:\workspace_f\BSK\READMEenc");
-            encryptionService.DecryptFile(@"C:\workspace_f\BSK\READMEenc.encrypted", @"C:\workspace_f\BSK\READMEdec.md");
+            mainWindow.DataContext = fileTextBox;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            Nullable<bool> result = dlg.ShowDialog();
+            if (result == true) {
+                fileTextBox = dlg.FileName;
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(fileTextBox)) {
+                encryptionService.EncryptFile(fileTextBox, fileTextBox, @"12345678", System.Security.Cryptography.CipherMode.CBC);
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(fileTextBox)) {
+                encryptionService.DecryptFile(fileTextBox, fileTextBox, @"12345678", System.Security.Cryptography.CipherMode.CBC);
+            }
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
