@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace BSK1
 {
@@ -20,51 +25,73 @@ namespace BSK1
     /// </summary>
     public partial class MainWindow : Window
     {
-        EncryptionService encryptionService;
+        private EncryptionService encryptionService;
+        public string FileName;
+        public OpenFileDialog OpenFileDialog;
+       // public List<string> EncryptionTypes = new List<string> { "ECB", "CBC", "CFB", "OFB" };
+        private Dictionary<String, CipherMode> EncryptionTypes = new Dictionary<String, CipherMode> {
+            {"ECB", CipherMode.ECB},
+            {"CBC", CipherMode.CBC},
+            {"CFB", CipherMode.CFB},
+            {"OFB", CipherMode.OFB}
+        };
 
-        private String ftb;
-        private String fileTextBox {
-            get {
-                return this.ftb;
-            }
-            set {
-                this.ftb = value;
-            }
+        private double SecureRand() {
+            RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+            var byteArray = new byte[4];
+            provider.GetBytes(byteArray);
+
+            //convert 4 bytes to an integer
+            var randomInteger = BitConverter.ToUInt32(byteArray, 0);
+
+            var byteArray2 = new byte[8];
+            provider.GetBytes(byteArray2);
+
+            //convert 8 bytes to a double
+            var randomDouble = BitConverter.ToDouble(byteArray2, 0);
+
+            return randomDouble;
         }
 
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
             encryptionService = new EncryptionService();
-            mainWindow.DataContext = fileTextBox;
+            EncryptionTypesCombo.ItemsSource = EncryptionTypes.Keys.ToList();
+            EncryptionTypesCombo.SelectedIndex = 0;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            Nullable<bool> result = dlg.ShowDialog();
-            if (result == true) {
-                fileTextBox = dlg.FileName;
+        private void Window_ContentRendered(object sender, EventArgs e) {
+            /*for (int i = 0; i <= 100; i++) {
+                ProgressBar.Dispatcher.Invoke(() => ProgressBar.Value = i, DispatcherPriority.Background);
+                Thread.Sleep(100);
+            }*/
+        }
+
+        private void Encrypt(object sender, RoutedEventArgs e) {
+            encryptionService.EncryptFile(ProgressBar,
+                                          OpenFileDialog.FileName,
+                                          OpenFileDialog.FileName.Replace(OpenFileDialog.SafeFileName, ""),
+                                          OutputName.Text,
+                                          @"test1234",
+                                          EncryptionTypes[EncryptionTypesCombo.Text]);
+        }
+
+        private void Decrypt(object sender, RoutedEventArgs e) {
+            encryptionService.DecryptFile(ProgressBar,
+                                          OpenFileDialog.FileName,
+                                          OpenFileDialog.FileName.Replace(OpenFileDialog.SafeFileName, ""),
+                                          OutputName.Text,
+                                          @"test1234",
+                                          EncryptionTypes[EncryptionTypesCombo.Text]);
+        }
+
+        private void ChooseFile(object sender, RoutedEventArgs e) {
+            OpenFileDialog = new OpenFileDialog();
+            if (OpenFileDialog.ShowDialog() == true) {
+                FileName = OpenFileDialog.FileName;
             }
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            if (!String.IsNullOrEmpty(fileTextBox)) {
-                encryptionService.EncryptFile(fileTextBox, fileTextBox, @"12345678", System.Security.Cryptography.CipherMode.CBC);
-            }
-        }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (!String.IsNullOrEmpty(fileTextBox)) {
-                encryptionService.DecryptFile(fileTextBox, fileTextBox, @"12345678", System.Security.Cryptography.CipherMode.CBC);
-            }
-        }
-
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-
+            ChosenFile.Content = FileName;
+            OutputName.Text = OpenFileDialog.SafeFileName;
         }
     }
 }
