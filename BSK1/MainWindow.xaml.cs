@@ -91,7 +91,8 @@ namespace BSK1
                 FileName = OpenFileDialog.FileName;
             }
             ChosenFile.Content = FileName;
-            OutputName.Text = OpenFileDialog.SafeFileName;
+            OutputName.Text = OpenFileDialog.SafeFileName + @".crypt";
         }
+
     }
 }

@@ -11,13 +11,13 @@
     <Grid Name="mainWindow">
         <Button Content="Choose file" Margin="327,10,10,0" VerticalAlignment="Top" Click="ChooseFile"/>
         <Label Content="Chosen file: " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="170"/>
-        <Label x:Name="ChosenFile" Content="" HorizontalAlignment="Left" Margin="78,10,0,0" VerticalAlignment="Top" Width="244"/>
+        <Label x:Name="ChosenFile" Content="C:/Workspace/.secretStuff/message.txt" HorizontalAlignment="Left" Margin="78,10,0,0" VerticalAlignment="Top" Width="244"/>
 
         <Label Content="Output file name:" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="195"/>
         <TextBox x:Name="OutputName" Height="23" Margin="0,36,10,0" TextWrapping="Wrap" Text="OutputName" VerticalAlignment="Top" HorizontalAlignment="Right" Width="195"/>
 
         <Label Content="Cipher mode:" HorizontalAlignment="Left" Margin="10,69,0,0" Width="195" Height="27" VerticalAlignment="Top"/>
-        <ComboBox x:Name="EncryptionTypesCombo" Margin="0,69,10,0" HorizontalAlignment="Right" Width="195" Height="22" VerticalAlignment="Top"/>
+        <ComboBox x:Name="EncryptionTypesCombo" Margin="0,69,10,0" HorizontalAlignment="Right" Width="195" Height="22" VerticalAlignment="Top" SelectionChanged="EncryptionTypesCombo_SelectionChanged"/>
 
         <Label Content="File recipent:" Margin="10,99,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="FileRecipent" Margin="0,96,10,0" TextWrapping="Wrap" Text="FileRecipent" HorizontalAlignment="Right" Width="195" Height="23" VerticalAlignment="Top"/>

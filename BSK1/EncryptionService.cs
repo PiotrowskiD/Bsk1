@@ -15,7 +15,7 @@ namespace BSK1
     class EncryptionService
     {
 
-        private long BUFFER_SIZE = 1048576; // 1MB
+        private long BUFFER_SIZE = 1024*1024; // 1MB
 
         public void EncryptFile(ProgressBar progressBar, String inputPath, String outputFolderPath, String outputFileName, String encryptionKey, CipherMode mode) {
             UnicodeEncoding encoding = new UnicodeEncoding();
@@ -31,13 +31,14 @@ namespace BSK1
 
             FileStream inputStream = new FileStream(inputPath, FileMode.Open);
             int data;
-            int progress = 0;
+            long progress = 0;
             byte[] buffer = new byte[BUFFER_SIZE];
-            while ((data = inputStream.Read(buffer, 0, buffer.Length)) != -1)
+            while ((data = inputStream.Read(buffer, 0, buffer.Length)) != 0)
             {
-                progress++;
-                cryptoStream.WriteByte((byte)data);
-                progressBar.Dispatcher.Invoke(() => progressBar.Value = ((progress*100)/inputStream.Length), DispatcherPriority.Background);
+                progress += data;
+                cryptoStream.Write(buffer, 0, data);
+                Console.WriteLine(((progress * 100) / inputStream.Length));
+                //progressBar.Dispatcher.Invoke(() => progressBar.Value = ((progress*100)/inputStream.Length), DispatcherPriority.Background);
             }
             inputStream.Close();
             cryptoStream.Close();
@@ -60,11 +61,12 @@ namespace BSK1
             int progress = 0;
             int data;
             byte[] buffer = new byte[BUFFER_SIZE];
-            while ((data = cryptoStream.Read(buffer, 0, buffer.Length)) != -1)
+            while ((data = cryptoStream.Read(buffer, 0, buffer.Length)) != 0)
             {
-                progress++;
+                progress += data;
                 outputStream.Write(buffer, 0, data);
-                progressBar.Dispatcher.Invoke(() => progressBar.Value = ((progress * 100) / inputStream.Length), DispatcherPriority.Background);
+                Console.WriteLine(((progress * 100) / inputStream.Length));
+                //progressBar.Dispatcher.Invoke(() => progressBar.Value = ((progress * 100) / inputStream.Length), DispatcherPriority.Background);
             }
             inputStream.Close();
             cryptoStream.Close();
