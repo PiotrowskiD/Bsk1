@@ -17,7 +17,7 @@
         <TextBox x:Name="OutputName" Height="23" Margin="0,36,10,0" TextWrapping="Wrap" Text="OutputName" VerticalAlignment="Top" HorizontalAlignment="Right" Width="195"/>
 
         <Label Content="Cipher mode:" HorizontalAlignment="Left" Margin="10,69,0,0" Width="195" Height="27" VerticalAlignment="Top"/>
-        <ComboBox x:Name="EncryptionTypesCombo" Margin="0,69,10,0" HorizontalAlignment="Right" Width="195" Height="22" VerticalAlignment="Top" SelectionChanged="EncryptionTypesCombo_SelectionChanged"/>
+        <ComboBox x:Name="EncryptionTypesCombo" Margin="0,69,10,0" HorizontalAlignment="Right" Width="195" Height="22" VerticalAlignment="Top"/>
 
         <Label Content="File recipent:" Margin="10,99,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="FileRecipent" Margin="0,96,10,0" TextWrapping="Wrap" Text="FileRecipent" HorizontalAlignment="Right" Width="195" Height="23" VerticalAlignment="Top"/>
