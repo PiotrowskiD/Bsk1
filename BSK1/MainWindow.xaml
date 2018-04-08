@@ -6,14 +6,13 @@
         xmlns:local="clr-namespace:BSK1"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        ContentRendered="Window_ContentRendered"
         Title="SuperEncryptor 9000" Height="219.334" Width="430">
     <Grid Name="mainWindow">
         <Button Content="Choose file" Margin="327,10,10,0" VerticalAlignment="Top" Click="ChooseFile"/>
         <Label Content="Chosen file: " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="170"/>
         <Label x:Name="ChosenFile" Content="C:/Workspace/.secretStuff/message.txt" HorizontalAlignment="Left" Margin="78,10,0,0" VerticalAlignment="Top" Width="244"/>
 
-        <Label Content="Output file name:" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="195"/>
+        <Label HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="195"/>
         <TextBox x:Name="OutputName" Height="23" Margin="0,36,10,0" TextWrapping="Wrap" Text="OutputName" VerticalAlignment="Top" HorizontalAlignment="Right" Width="195"/>
 
         <Label Content="Cipher mode:" HorizontalAlignment="Left" Margin="10,69,0,0" Width="195" Height="27" VerticalAlignment="Top"/>

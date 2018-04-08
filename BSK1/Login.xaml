@@ -7,11 +7,12 @@
         mc:Ignorable="d"
         Title="SuperEncryptor 9000" Height="140" Width="300">
     <Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="82,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="82,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
+        <TextBox x:Name="Username" Height="23" Margin="82,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox x:Name="Password" Height="23" Margin="82,41,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <Label Content="Username:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="83"/>
         <Label Content="Password:" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="83"/>
-        <Button Content="Login" HorizontalAlignment="Left" Margin="10,79,0,0" VerticalAlignment="Top" Width="272"/>
+        <Button Content="Login" HorizontalAlignment="Left" Margin="10,0,0,10" Width="126" Height="20" VerticalAlignment="Bottom" Click="LoginClick"/>
+        <Button Content="Register" HorizontalAlignment="Right" Margin="0,0,10,10" Width="126" Height="20" VerticalAlignment="Bottom" Click="RegisterClick"/>
 
     </Grid>
 </Window>
