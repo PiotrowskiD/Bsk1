@@ -69,7 +69,8 @@ namespace BSK1
 
         public String GetUserDirectoryPath(String login) {
             String loginHashB64 = Utils.BytesToB64(encryptionService.GetMD5Hash(login));
-            return Path.Combine(dataDirectory, loginHashB64);
+            String directory = Path.Combine(dataDirectory, loginHashB64);
+            return Directory.Exists(directory) ? directory : null;
         }
 
         public byte[] GetSessionKey() {

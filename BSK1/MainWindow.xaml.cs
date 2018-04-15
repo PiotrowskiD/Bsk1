@@ -53,7 +53,7 @@ namespace BSK1
                                           OutputName.Text,
                                           sessionService.GetSessionKey(),
                                           EncryptionTypes[EncryptionTypesCombo.Text],
-                                          FileRecipent.Text);
+                                          FileRecipent.Text.Split(','));
         }
 
         private void Decrypt(object sender, RoutedEventArgs e) {

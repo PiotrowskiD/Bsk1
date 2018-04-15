@@ -27,13 +27,6 @@ namespace BSK1
             sessionService = service;
         }
 
-        public void EncryptFile(ProgressBar progressBar, String inputPath, String outputFolderPath, String outputFileName, byte[] key, CipherMode mode, String fileRecipent)
-        {
-            String[] array = new String[1];
-            array[0] = fileRecipent;
-            EncryptFile(progressBar, inputPath, outputFolderPath, outputFileName, key, mode, array);
-        }
-
         public void EncryptFile(ProgressBar progressBar, String inputPath, String outputFolderPath, String outputFileName, byte[] key, CipherMode mode, String[] fileRecipents)
         {
             FileStream outputStream = new FileStream(outputFolderPath + outputFileName, FileMode.Create);
@@ -54,12 +47,19 @@ namespace BSK1
             foreach (String fileRecipent in fileRecipents)
             {
                 String recipentDirectory = sessionService.GetUserDirectoryPath(fileRecipent);
-                String recipentPublicKey = DecryptRSAKey(GetMD5Hash(fileRecipent), Path.Combine(recipentDirectory, SessionService.RSA_PUBLIC_KEY_FILENAME));
-                byte[] encryptedSessionKey = EncryptSessionKey(recipentPublicKey);
-                byte[] recipentLoginHash = GetMD5Hash(fileRecipent);
-                outputStream.Write(recipentLoginHash, 0, 16); // MD5 hash always is 16 bytes
-                outputStream.Write(BitConverter.GetBytes(encryptedSessionKey.Length), 0, 4);
-                outputStream.Write(encryptedSessionKey, 0, encryptedSessionKey.Length);
+                if (recipentDirectory != null)
+                {
+                    String recipentPublicKey = DecryptRSAKey(GetMD5Hash(fileRecipent), Path.Combine(recipentDirectory, SessionService.RSA_PUBLIC_KEY_FILENAME));
+                    byte[] encryptedSessionKey = EncryptSessionKey(recipentPublicKey);
+                    byte[] recipentLoginHash = GetMD5Hash(fileRecipent);
+                    outputStream.Write(recipentLoginHash, 0, 16); // MD5 hash is always 16 bytes
+                    outputStream.Write(BitConverter.GetBytes(encryptedSessionKey.Length), 0, 4);
+                    outputStream.Write(encryptedSessionKey, 0, encryptedSessionKey.Length);
+                }
+                else { // write random data if user not found
+                    outputStream.Write(SecureRand(16), 0, 16); // MD5 hash is always 16 bytes
+                    outputStream.Write(BitConverter.GetBytes(0), 0, 4);
+                }
             }
             outputStream.Flush();
 
@@ -95,7 +95,7 @@ namespace BSK1
             inputStream.Read(iv, 0, blockSize / 8);
             inputStream.Read(metadata, 0, 4);
             int fileRecipentsCount = BitConverter.ToInt32(metadata, 0);
-            byte[] decryptedSessionKey = null;
+            byte[] decryptedSessionKey = SecureRand(AES_FEEDBACK_SIZE / 8);
             for (int i = 0; i < fileRecipentsCount; i++)
             {
                 byte[] recipentLoginHash = new byte[16];
