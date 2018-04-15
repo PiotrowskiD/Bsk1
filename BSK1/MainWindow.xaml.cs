@@ -26,8 +26,11 @@ namespace BSK1
     public partial class MainWindow : Window
     {
         private EncryptionService encryptionService;
+        private SessionService sessionService;
+
         public string FileName;
         public OpenFileDialog OpenFileDialog;
+
         private Dictionary<String, CipherMode> EncryptionTypes = new Dictionary<String, CipherMode> {
             {"ECB", CipherMode.ECB},
             {"CBC", CipherMode.CBC},
@@ -35,11 +38,12 @@ namespace BSK1
             {"OFB", CipherMode.OFB}
         };
 
-        public MainWindow(EncryptionService encryptionService) {
+        public MainWindow(EncryptionService encryptionService, SessionService sessionService) {
             InitializeComponent();
             EncryptionTypesCombo.ItemsSource = EncryptionTypes.Keys.ToList();
             EncryptionTypesCombo.SelectedIndex = 0;
             this.encryptionService = encryptionService;
+            this.sessionService = sessionService;
         }
 
         private void Encrypt(object sender, RoutedEventArgs e) {
@@ -47,17 +51,16 @@ namespace BSK1
                                           OpenFileDialog.FileName,
                                           OpenFileDialog.FileName.Replace(OpenFileDialog.SafeFileName, ""),
                                           OutputName.Text,
-                                          @"test1234test1234",
+                                          sessionService.GetSessionKey(),
                                           EncryptionTypes[EncryptionTypesCombo.Text],
-                                          new String[3]);
+                                          FileRecipent.Text);
         }
 
         private void Decrypt(object sender, RoutedEventArgs e) {
             encryptionService.DecryptFile(ProgressBar,
                                           OpenFileDialog.FileName,
                                           OpenFileDialog.FileName.Replace(OpenFileDialog.SafeFileName, ""),
-                                          OutputName.Text,
-                                          @"test1234test1234");
+                                          OutputName.Text);
         }
 
         private void ChooseFile(object sender, RoutedEventArgs e) {

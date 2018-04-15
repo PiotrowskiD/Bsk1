@@ -26,6 +26,7 @@ namespace BSK1
             InitializeComponent();
             encryptionService = new EncryptionService();
             sessionService = new SessionService(encryptionService);
+            encryptionService.SetSessionService(sessionService);
         }
 
         private void RegisterClick(object sender, RoutedEventArgs e) {
@@ -46,7 +47,7 @@ namespace BSK1
         }
 
         private void GoToMainWindow() {
-            var mainWindow = new MainWindow(encryptionService);
+            var mainWindow = new MainWindow(encryptionService, sessionService);
             mainWindow.Show();
             this.Close();
         }

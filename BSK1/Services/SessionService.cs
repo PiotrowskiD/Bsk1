@@ -1,4 +1,5 @@
 ﻿using BSK1.Exceptions;
+using BSK1.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,10 +31,11 @@ namespace BSK1
         public void Authenticate(String login, String password) {
             byte[] loginHash = encryptionService.GetMD5Hash(login);
             byte[] passwordHash = encryptionService.GetSHA256Hash(password);
-            byte[] registeredUserPasswordHash = GetRegisteredUserPasswordHash(Convert.ToBase64String(loginHash));
+            byte[] registeredUserPasswordHash = GetRegisteredUserPasswordHash(Utils.BytesToB64(loginHash));
             if (!passwordHash.SequenceEqual(registeredUserPasswordHash)) {
                 throw new AuthenticationException();
             }
+            sessionKey = encryptionService.SecureRand(EncryptionService.AES_FEEDBACK_SIZE / 8);
             loggedUserUsername = login;
         }
 
@@ -48,7 +50,7 @@ namespace BSK1
             String rsaPrivateKey;
             String rsaPublicKey;
             encryptionService.GenerateRSAKeyPair(out rsaPrivateKey, out rsaPublicKey);
-            byte[] encryptionKey = GetRegisteredUserPasswordHash(Convert.ToBase64String(encryptionService.GetMD5Hash(loggedUserUsername)));
+            byte[] encryptionKey = encryptionService.GetMD5Hash(login);
             encryptionService.EncryptRSAKey(rsaPublicKey, encryptionKey, Path.Combine(userDirectory, RSA_PUBLIC_KEY_FILENAME));
             encryptionService.EncryptRSAKey(rsaPrivateKey, encryptionKey, Path.Combine(userDirectory, RSA_PRIVATE_KEY_FILENAME));
         }
@@ -61,9 +63,21 @@ namespace BSK1
             return null;
         }
 
+        public byte[] GetRegisteredUserPasswordHash(byte[] loginHash) {
+            return GetRegisteredUserPasswordHash(Utils.BytesToB64(loginHash));
+        }
+
         public String GetUserDirectoryPath(String login) {
-            String loginHashB64 = Convert.ToBase64String(encryptionService.GetMD5Hash(login));
+            String loginHashB64 = Utils.BytesToB64(encryptionService.GetMD5Hash(login));
             return Path.Combine(dataDirectory, loginHashB64);
+        }
+
+        public byte[] GetSessionKey() {
+            return sessionKey;
+        }
+
+        public String GetUsername() {
+            return loggedUserUsername;
         }
 
     }
