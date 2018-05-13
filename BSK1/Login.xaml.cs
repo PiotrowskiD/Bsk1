@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BSK1.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,19 +31,28 @@ namespace BSK1
         }
 
         private void RegisterClick(object sender, RoutedEventArgs e) {
-            try {
+            try
+            {
                 sessionService.Register(Username.Text, Password.Text);
-            } catch (Exception ex) {
-
+                MessageBox.Show("Registered user " + Username.Text + ".");
+            }
+            catch (UserAlreadyExistsException ex)
+            {
+                MessageBox.Show("Username already taken.");
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Registration failed.");
             }
         }
 
         private void LoginClick(object sender, RoutedEventArgs e) {
-            try {
+            try
+            {
                 sessionService.Authenticate(Username.Text, Password.Text);
                 GoToMainWindow();
-            } catch (Exception ex) {
-
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Login failed.");
             }
         }
 

@@ -30,6 +30,7 @@ namespace BSK1
         public void EncryptFile(ProgressBar progressBar, String inputPath, String outputFolderPath, String outputFileName, byte[] key, CipherMode mode, String[] fileRecipents)
         {
             FileStream outputStream = new FileStream(outputFolderPath + outputFileName, FileMode.Create);
+            String extension = Path.GetExtension(outputFileName.Replace(".crypt", ""));
 
             Aes aes = new AesCryptoServiceProvider();
             aes.BlockSize = AES_BLOCK_SIZE;
@@ -39,6 +40,15 @@ namespace BSK1
             byte[] iv = SecureRand(aes.BlockSize / 8);
 
             // metadata header
+            if (extension != null)
+            {
+                byte[] extBytes = Encoding.ASCII.GetBytes(extension);
+                outputStream.Write(BitConverter.GetBytes(extBytes.Length), 0, 4);
+                outputStream.Write(extBytes, 0, extBytes.Length);
+            }
+            else {
+                outputStream.Write(BitConverter.GetBytes(0), 0, 4);
+            }
             outputStream.Write(BitConverter.GetBytes(aes.BlockSize), 0, 4);
             outputStream.Write(BitConverter.GetBytes(aes.FeedbackSize), 0, 4);
             outputStream.Write(BitConverter.GetBytes((int)mode), 0, 4);
@@ -68,14 +78,20 @@ namespace BSK1
             FileStream inputStream = new FileStream(inputPath, FileMode.Open);
             int data;
             long progress = 0;
+            int percentage = 0;
             byte[] buffer = new byte[BUFFER_SIZE];
             while ((data = inputStream.Read(buffer, 0, buffer.Length)) != 0)
             {
                 progress += data;
                 cryptoStream.Write(buffer, 0, data);
-                Console.WriteLine(((progress * 100) / inputStream.Length));
-                // update progress bar here
+                int newPercentage = (int)((progress * 100) / inputStream.Length);
+                if (newPercentage != percentage) {
+                    percentage = newPercentage;
+                    Console.WriteLine(percentage);
+                    progressBar.Dispatcher.Invoke(() => progressBar.Value = percentage, DispatcherPriority.Background);
+                }
             }
+            progressBar.Dispatcher.Invoke(() => progressBar.Value = 100, DispatcherPriority.Background);
             cryptoStream.Close();
             inputStream.Close();
             outputStream.Close();
@@ -84,7 +100,17 @@ namespace BSK1
         public void DecryptFile(ProgressBar progressBar, String inputPath, String outputFolderPath, String outputFileName)
         {
             FileStream inputStream = new FileStream(inputPath, FileMode.Open);
+
             byte[] metadata = new byte[4];
+            string fileExtension = null;
+            inputStream.Read(metadata, 0, 4);
+            int fileExtensionLenght = BitConverter.ToInt32(metadata, 0);
+            if (fileExtensionLenght > 0)
+            {
+                byte[] fileExtensionBytes = new byte[fileExtensionLenght];
+                inputStream.Read(fileExtensionBytes, 0, fileExtensionLenght);
+                fileExtension = Encoding.ASCII.GetString(fileExtensionBytes);
+            }
             inputStream.Read(metadata, 0, 4);
             int blockSize = BitConverter.ToInt32(metadata, 0);
             inputStream.Read(metadata, 0, 4);
@@ -121,8 +147,9 @@ namespace BSK1
 
             ICryptoTransform decryptor = aes.CreateDecryptor(decryptedSessionKey, iv);
             CryptoStream cryptoStream = new CryptoStream(inputStream, decryptor, CryptoStreamMode.Read);
-            FileStream outputStream = new FileStream(outputFolderPath + outputFileName, FileMode.Create);
-            int progress = 0;
+            FileStream outputStream = new FileStream(outputFolderPath + outputFileName + (fileExtension ?? ""), FileMode.Create);
+            long progress = 0;
+            int percentage = 0;
             int data;
             byte[] buffer = new byte[BUFFER_SIZE];
             while ((data = cryptoStream.Read(buffer, 0, buffer.Length)) != 0)
@@ -130,8 +157,15 @@ namespace BSK1
                 progress += data;
                 outputStream.Write(buffer, 0, data);
                 Console.WriteLine(((progress * 100) / inputStream.Length));
-                //progressBar.Dispatcher.Invoke(() => progressBar.Value = ((progress * 100) / inputStream.Length), DispatcherPriority.Background);
+                int newPercentage = (int)((progress * 100) / inputStream.Length);
+                if (newPercentage != percentage)
+                {
+                    percentage = newPercentage;
+                    Console.WriteLine(percentage);
+                    progressBar.Dispatcher.Invoke(() => progressBar.Value = percentage, DispatcherPriority.Background);
+                }
             }
+            progressBar.Dispatcher.Invoke(() => progressBar.Value = 100, DispatcherPriority.Background);
             inputStream.Close();
             cryptoStream.Close();
             outputStream.Close();

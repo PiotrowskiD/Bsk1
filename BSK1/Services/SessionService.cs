@@ -40,7 +40,8 @@ namespace BSK1
         }
 
         public void Register(String login, String password) {
-            String userDirectory = GetUserDirectoryPath(login);
+            String loginHashB64 = Utils.BytesToB64(encryptionService.GetMD5Hash(login));
+            String userDirectory = Path.Combine(dataDirectory, loginHashB64);
             if (Directory.Exists(userDirectory)) {
                 throw new UserAlreadyExistsException();
             }
